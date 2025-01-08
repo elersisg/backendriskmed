@@ -32,10 +32,13 @@ const swaggerOptions = {
 
 //Importar rutas
 const usuariosRoutes = require('./src/routes/usuario.routes.js')  ; // Rutas relacionadas con usuarios
+const nivelRiesgoRoutes = require('./src/routes/nivelriesgo.routes.js'); // Rutas relacionadas con niveles de riesgo
 
 
 // Registrar rutas
 app.use('/api/usuarios', usuariosRoutes);
+app.use('/api/nivel-riesgo', nivelRiesgoRoutes);
+
 
 
 const swaggerDocs = swaggerJSDoc(swaggerOptions);

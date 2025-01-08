@@ -7,6 +7,8 @@ const swaggerJSDoc = require('swagger-jsdoc');
 
 // Importar rutas
 const usuariosRoutes = require('./src/routes/usuario.routes.js')  ; // Rutas relacionadas con usuarios
+const nivelRiesgoRoutes = require('./src/routes/nivelriesgo.routes.js'); // Rutas relacionadas con niveles de riesgo
+
 
 const app = express();
 
@@ -45,7 +47,7 @@ app.use('/api-docs', swaggerUI.serve, swaggerUI.setup(swaggerDocs));
 
 // Registrar rutas
 app.use('/api/usuarios', usuariosRoutes);
-
+app.use('/api/nivel-riesgo', nivelRiesgoRoutes);
 
 // Manejo de rutas no encontradas (404)
 app.use((req, res, next) => {
