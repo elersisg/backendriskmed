@@ -6,7 +6,7 @@ const swaggerUI = require('swagger-ui-express');
 const swaggerJSDoc = require('swagger-jsdoc');
 
 // Importar rutas
-//const usuariosRoutes = require('./src/routes/usuario.route.js'); // Rutas relacionadas con usuarios
+const usuariosRoutes = require('./src/routes/usuario.routes.js')  ; // Rutas relacionadas con usuarios
 
 const app = express();
 
@@ -44,7 +44,8 @@ app.use(morgan('dev')); // Registrar solicitudes HTTP en consola
 app.use('/api-docs', swaggerUI.serve, swaggerUI.setup(swaggerDocs));
 
 // Registrar rutas
-//app.use('/api/usuarios', usuariosRoutes);
+app.use('/api/usuarios', usuariosRoutes);
+
 
 // Manejo de rutas no encontradas (404)
 app.use((req, res, next) => {

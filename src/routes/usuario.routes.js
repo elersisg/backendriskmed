@@ -1,12 +1,20 @@
 const express = require('express');
 const router = express.Router();
-const usuarioController = require('../controllers/usuario.controller.js');
+const usuarioController = require('../controllers/usuario.controller');
+
+/**
+ * @swagger
+ * tags:
+ *   name: Usuarios
+ *   description: Gestión de usuarios en la API
+ */
 
 /**
  * @swagger
  * /usuarios:
  *   post:
  *     summary: Crear un nuevo usuario
+ *     tags: [Usuarios]
  *     requestBody:
  *       required: true
  *       content:
@@ -35,6 +43,7 @@ router.post('/', usuarioController.createUsuario);
  * /usuarios/login:
  *   post:
  *     summary: Autenticar un usuario
+ *     tags: [Usuarios]
  *     requestBody:
  *       required: true
  *       content:
@@ -59,6 +68,7 @@ router.post('/login', usuarioController.loginUsuario);
  * /usuarios/{id_usuario}:
  *   put:
  *     summary: Actualizar un usuario
+ *     tags: [Usuarios]
  *     parameters:
  *       - name: id_usuario
  *         in: path
@@ -91,6 +101,7 @@ router.put('/:id_usuario', usuarioController.updateUsuario);
  * /usuarios/{id_usuario}:
  *   get:
  *     summary: Obtener un usuario por ID
+ *     tags: [Usuarios]
  *     parameters:
  *       - name: id_usuario
  *         in: path
@@ -110,6 +121,7 @@ router.get('/:id_usuario', usuarioController.getUsuarioById);
  * /usuarios/{id_usuario}:
  *   delete:
  *     summary: Eliminar un usuario por ID
+ *     tags: [Usuarios]
  *     parameters:
  *       - name: id_usuario
  *         in: path
@@ -123,6 +135,5 @@ router.get('/:id_usuario', usuarioController.getUsuarioById);
  *         description: Usuario no encontrado
  */
 router.delete('/:id_usuario', usuarioController.deleteUsuario);
-
 
 module.exports = router;

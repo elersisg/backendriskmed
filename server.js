@@ -30,10 +30,13 @@ const swaggerOptions = {
   apis: ['./src/routes/*.js'], 
 };
 
-//Import routes
+//Importar rutas
+const usuariosRoutes = require('./src/routes/usuario.routes.js')  ; // Rutas relacionadas con usuarios
 
 
 // Registrar rutas
+app.use('/api/usuarios', usuariosRoutes);
+
 
 const swaggerDocs = swaggerJSDoc(swaggerOptions);
 app.use('/api-docs', swaggerUI.serve, swaggerUI.setup(swaggerDocs));
