@@ -8,9 +8,13 @@ const createSolicitud = async (req, res, next) => {
         const nuevaSolicitud = await solicitudService.createSolicitud(validatedData);
         res.status(201).json({ message: 'Solicitud creada exitosamente', nuevaSolicitud });
     } catch (error) {
+        if (error.message.includes('Ya existe una solicitud rechazada')) {
+            return res.status(409).json({ message: error.message });
+        }
         next(error);
     }
 };
+
 
 // Obtener solicitudes filtradas por estado
 const getSolicitudesByStatus = async (req, res, next) => {

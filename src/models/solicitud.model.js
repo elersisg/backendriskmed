@@ -16,6 +16,27 @@ const insertSolicitud = async (data) => {
     return result.recordset[0];
 };
 
+
+// Verificar si existe una solicitud rechazada para la misma combinación
+const checkRejectedSolicitud = async (id_subcategoria, id_medicamento, id_proveedor) => {
+    const pool = await poolPromise;
+    const result = await pool.request()
+        .input('id_subcategoria', id_subcategoria)
+        .input('id_medicamento', id_medicamento)
+        .input('id_proveedor', id_proveedor)
+        .input('status_solicitud', 'Rechazada') // Estado rechazado
+        .query(`
+            SELECT 1
+            FROM Solicitud
+            WHERE id_subcategoria = @id_subcategoria
+            AND id_medicamento = @id_medicamento
+            AND id_proveedor = @id_proveedor
+            AND status_solicitud = @status_solicitud
+        `);
+
+    return result.recordset.length > 0;
+};
+
 // Obtener solicitudes filtradas por estado
 const selectSolicitudesByStatus = async (status_solicitud) => {
     const pool = await poolPromise;
@@ -48,9 +69,11 @@ const deleteSolicitudById = async (id_solicitud) => {
     return result.rowsAffected[0]; // Retorna el número de filas afectadas
 };
 
+
 module.exports = {
     insertSolicitud,
     selectSolicitudesByStatus,
     updateSolicitudStatus,
     deleteSolicitudById,
+    checkRejectedSolicitud,
 };
