@@ -35,8 +35,6 @@ const nivelRiesgoController = require('../controllers/nivelriesgo.controller.js'
  *     responses:
  *       200:
  *         description: Nivel de riesgo actualizado exitosamente
- *       404:
- *         description: Nivel de riesgo no encontrado
  */
 router.put('/:id_nivelriesgo', nivelRiesgoController.updateNivelRiesgo);
 
@@ -50,6 +48,6 @@ router.put('/:id_nivelriesgo', nivelRiesgoController.updateNivelRiesgo);
  *       200:
  *         description: Lista de niveles de riesgo con información relacionada
  */
-router.get('/', nivelRiesgoController.selectNivelRiesgoWithJoins);
+router.get('/', nivelRiesgoController.getNivelRiesgoWithJoins);
 
 module.exports = router;

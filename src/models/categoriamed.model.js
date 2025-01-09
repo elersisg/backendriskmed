@@ -8,5 +8,5 @@ const selectCategorias = async () => {
 };
 
 module.exports = {
-    selectCategorias,
+    selectCategorias, // Exportar el método
 };

@@ -1,21 +1,22 @@
 const nivelRiesgoService = require('../services/nivelriesgo.service.js');
+const { UpdateNivelRiesgoDTO } = require('../DTO/nivelriesgo.dto.js');
 
-// Actualizar nivel de riesgo
+// Actualizar un nivel de riesgo
 const updateNivelRiesgo = async (req, res, next) => {
     try {
-        const { id_nivelriesgo } = req.params; // ID desde la URL
-        const data = req.body; // Datos a actualizar desde el cuerpo de la solicitud
-        const nivelRiesgo = await nivelRiesgoService.updateNivelRiesgo(id_nivelriesgo, data);
-        res.status(200).json({ message: 'Nivel de riesgo actualizado', nivelRiesgo });
+        const { id_nivelriesgo } = req.params; // ID desde los parámetros
+        const validatedData = await UpdateNivelRiesgoDTO.validateAsync(req.body); // Validar datos con DTO
+        const nivelRiesgo = await nivelRiesgoService.updateNivelRiesgo(id_nivelriesgo, validatedData);
+        res.status(200).json({ message: 'Nivel de riesgo actualizado exitosamente', nivelRiesgo });
     } catch (error) {
         next(error); // Manejo de errores
     }
 };
 
-// Obtener niveles de riesgo con joins
-const selectNivelRiesgoWithJoins = async (req, res, next) => {
+// Obtener niveles de riesgo con información relacionada
+const getNivelRiesgoWithJoins = async (req, res, next) => {
     try {
-        const nivelesRiesgo = await nivelRiesgoService.selectNivelRiesgoWithJoins();
+        const nivelesRiesgo = await nivelRiesgoService.getNivelRiesgoWithJoins();
         res.status(200).json(nivelesRiesgo);
     } catch (error) {
         next(error);
@@ -24,5 +25,5 @@ const selectNivelRiesgoWithJoins = async (req, res, next) => {
 
 module.exports = {
     updateNivelRiesgo,
-    selectNivelRiesgoWithJoins,
+    getNivelRiesgoWithJoins,
 };

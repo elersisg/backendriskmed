@@ -1,4 +1,4 @@
-const usuarioModel = require('../models/usuario.model.js'); 
+const usuarioModel = require('../models/usuario.model');
 
 // Crear usuario
 const createUsuario = async (data) => {
@@ -20,21 +20,17 @@ const updateUsuario = async (id_usuario, data) => {
     return await usuarioModel.updateUsuario(id_usuario, contrasena, email, status_usuario);
 };
 
-// Obtener usuario por ID (funcionalidad adicional)
-const getUsuarioById = async (id_usuario) => {
-    return await usuarioModel.getUsuarioById(id_usuario);
+// Eliminar usuario
+const deleteUsuario = async (id_usuario) => {
+    const wasDeleted = await usuarioModel.deleteUsuario(id_usuario);
+    if (!wasDeleted) throw new Error('Usuario no encontrado');
+    return wasDeleted;
 };
 
-const deleteUsuario = async (id_usuario) => {
-    const result = await usuarioModel.deleteUsuario(id_usuario);
-    if (!result) throw new Error('Usuario no encontrado');
-    return result;
-};
 
 module.exports = {
     createUsuario,
     loginUsuario,
     updateUsuario,
-    getUsuarioById,
     deleteUsuario,
 };

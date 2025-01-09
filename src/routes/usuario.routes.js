@@ -6,7 +6,7 @@ const usuarioController = require('../controllers/usuario.controller');
  * @swagger
  * tags:
  *   name: Usuarios
- *   description: Gestión de usuarios en la API
+ *   description: Gestión de usuarios
  */
 
 /**
@@ -58,8 +58,6 @@ router.post('/', usuarioController.createUsuario);
  *     responses:
  *       200:
  *         description: Autenticación exitosa
- *       401:
- *         description: Credenciales inválidas o usuario inactivo
  */
 router.post('/login', usuarioController.loginUsuario);
 
@@ -91,30 +89,8 @@ router.post('/login', usuarioController.loginUsuario);
  *     responses:
  *       200:
  *         description: Usuario actualizado exitosamente
- *       404:
- *         description: Usuario no encontrado
  */
 router.put('/:id_usuario', usuarioController.updateUsuario);
-
-/**
- * @swagger
- * /usuarios/{id_usuario}:
- *   get:
- *     summary: Obtener un usuario por ID
- *     tags: [Usuarios]
- *     parameters:
- *       - name: id_usuario
- *         in: path
- *         required: true
- *         schema:
- *           type: integer
- *     responses:
- *       200:
- *         description: Usuario encontrado
- *       404:
- *         description: Usuario no encontrado
- */
-router.get('/:id_usuario', usuarioController.getUsuarioById);
 
 /**
  * @swagger

@@ -10,7 +10,7 @@ const insertUsuario = async (rol, nombre, email, contrasena, status_usuario) => 
         .input('contrasena', contrasena)
         .input('status_usuario', status_usuario)
         .execute('InsertUsuario');
-    return result.recordset[0];
+    return result.recordset[0]; // Retorna el ID del nuevo usuario
 };
 
 // Autenticar usuario
@@ -20,7 +20,7 @@ const authenticateUsuario = async (email, contrasena) => {
         .input('email', email)
         .input('contrasena', contrasena)
         .execute('AuthenticateUsuario');
-    return result.recordset[0];
+    return result.recordset[0]; // Retorna los datos del usuario autenticado
 };
 
 // Actualizar usuario
@@ -32,33 +32,22 @@ const updateUsuario = async (id_usuario, contrasena, email, status_usuario) => {
         .input('email', email)
         .input('status_usuario', status_usuario)
         .execute('UpdateUsuario');
-    return result.recordset[0];
+    return result.recordset[0]; // Retorna los datos actualizados del usuario
 };
 
-// Obtener usuario por ID
-const getUsuarioById = async (id_usuario) => {
-    const pool = await poolPromise;
-    const result = await pool.request()
-        .input('id_usuario', id_usuario)
-        .query('SELECT * FROM Usuario WHERE id_usuario = @id_usuario');
-    return result.recordset[0];
-};
-
+// Eliminar usuario
 const deleteUsuario = async (id_usuario) => {
     const pool = await poolPromise;
     const result = await pool.request()
         .input('id_usuario', id_usuario)
         .query('DELETE FROM Usuario WHERE id_usuario = @id_usuario');
-    return result.rowsAffected[0] > 0; // Retorna `true` si se eliminó el usuario, `false` si no.
+    return result.rowsAffected[0] > 0; // Retorna true si se eliminó el usuario, false si no
 };
+
 
 module.exports = {
     insertUsuario,
     authenticateUsuario,
     updateUsuario,
-    getUsuarioById,
     deleteUsuario,
 };
-
-
-// kel oejlkajflasjfoiajfp oawjf jawfs

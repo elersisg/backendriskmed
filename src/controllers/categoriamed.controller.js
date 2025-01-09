@@ -1,6 +1,7 @@
+const { CreateOrUpdateCategoriaDTO } = require('../DTO/categoriamed.dto.js');
 const categoriaMedService = require('../services/categoriamed.service.js');
 
-// Obtener todas las categorías
+// Crear una nueva categoría médica
 const getAllCategorias = async (req, res, next) => {
     try {
         const categorias = await categoriaMedService.getAllCategorias();
@@ -11,5 +12,5 @@ const getAllCategorias = async (req, res, next) => {
 };
 
 module.exports = {
-    getAllCategorias,
+    getAllCategorias, // Exportar el método
 };
