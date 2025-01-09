@@ -34,13 +34,13 @@ const swaggerOptions = {
 const usuariosRoutes = require('./src/routes/usuario.routes.js')  ; // Rutas relacionadas con usuarios
 const nivelRiesgoRoutes = require('./src/routes/nivelriesgo.routes.js'); // Rutas relacionadas con niveles de riesgo
 const categoriaMedRoutes = require('./src/routes/categoriamed.routes.js'); // Rutas relacionadas con categorías médicas
-
+const subcategoriaMedRoutes = require('./src/routes/subcategoriamed.routes.js'); // Nueva ruta para subcategorías médicas
 
 // Registrar rutas
 app.use('/api/usuarios', usuariosRoutes);
 app.use('/api/nivel-riesgo', nivelRiesgoRoutes);
 app.use('/api/categoria-med', categoriaMedRoutes); // Nueva ruta para categorías médicas
-
+app.use('/api/subcategoria-med', subcategoriaMedRoutes); // Nueva ruta para subcategorías médicas
 
 
 const swaggerDocs = swaggerJSDoc(swaggerOptions);
