@@ -13,14 +13,38 @@ const createUsuario = async (req, res, next) => {
 };
 
 // Autenticar usuario
+const jwt = require('jsonwebtoken');
+const usuarioService = require('../services/usuario.service');
+
+// Inicio de sesión
 const loginUsuario = async (req, res, next) => {
     try {
-        const validatedData = await LoginUsuarioDTO.validateAsync(req.body);
-        const usuario = await usuarioService.loginUsuario(validatedData.email, validatedData.contrasena);
-        res.status(200).json({ message: 'Autenticación exitosa', usuario });
+        const { email, contrasena } = req.body;
+
+        // Validar credenciales
+        const usuario = await usuarioService.authenticate(email, contrasena);
+        if (!usuario) {
+            return res.status(401).json({ message: 'Credenciales incorrectas.' });
+        }
+
+        // Generar el token JWT
+        const token = jwt.sign(
+            {
+                id_usuario: usuario.id_usuario,
+                rol: usuario.rol, // Incluye el rol del usuario
+            },
+            process.env.JWT_SECRET,
+            { expiresIn: '1h' } // El token expira en 1 hora
+        );
+
+        res.status(200).json({ token, message: 'Inicio de sesión exitoso' });
     } catch (error) {
         next(error);
     }
+};
+
+module.exports = {
+    loginUsuario,
 };
 
 // Actualizar usuario
