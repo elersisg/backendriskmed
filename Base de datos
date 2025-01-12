@@ -1,0 +1,192 @@
+-- Creacion de base de datos y los alter que se han hecho hasta ahora
+
+-- Tabla Usuario:
+-- Almacena información básica de los usuarios del sistema, incluyendo rol, nombre, email, contraseña y estado.
+
+CREATE TABLE Usuario (
+    id_usuario INT IDENTITY(1,1) NOT NULL PRIMARY KEY, -- Identificador único autoincrementable del usuario
+    rol VARCHAR(20) NOT NULL,                         -- Rol del usuario en el sistema
+    nombre VARCHAR(100) NOT NULL,                     -- Nombre completo del usuario
+    email NVARCHAR(150) NOT NULL UNIQUE,              -- Correo electrónico único para cada usuario
+    contrasena VARCHAR(256) NOT NULL,                 -- Contraseña encriptada para el inicio de sesión
+    status_usuario VARCHAR(10) NOT NULL               -- Estado del usuario (Activo, Inactivo)
+);
+
+
+-- Tabla Inspector:
+-- Almacena información específica de los inspectores, incluyendo su cédula y relación con un usuario del sistema.
+
+CREATE TABLE Inspector (
+    id_inspector INT IDENTITY(1,1) NOT NULL PRIMARY KEY, -- Identificador único autoincrementable del inspector
+    id_usuario INT NOT NULL,                           -- Relación con la tabla Usuario
+    cedula_inspector VARCHAR(11) NOT NULL UNIQUE,      -- Número de cédula única del inspector
+
+    -- Definición de la clave foránea
+    CONSTRAINT FK_Inspector_Usuario FOREIGN KEY (id_usuario) REFERENCES Usuario(id_usuario)
+);
+
+
+-- Tabla Admin:
+-- Almacena información específica de los administradores, incluyendo su cédula y relación con un usuario del sistema.
+
+CREATE TABLE Admin (
+    id_admin INT IDENTITY(1,1) NOT NULL PRIMARY KEY,  -- Identificador único autoincrementable del administrador
+    id_usuario INT NOT NULL,                         -- Relación con la tabla Usuario
+    cedula_admin VARCHAR(11) NOT NULL UNIQUE,        -- Número de cédula única del administrador
+
+    -- Definición de la clave foránea
+    CONSTRAINT FK_Admin_Usuario FOREIGN KEY (id_usuario) REFERENCES Usuario(id_usuario)
+);
+
+-- Tabla Categoria_nivel:
+-- Almacena los diferentes niveles de categoría con su nivel de riesgo asociado y la frecuencia recomendada para inspecciones.
+
+CREATE TABLE Categoria_nivel (
+    id_categoria_nivel INT IDENTITY(1,1) NOT NULL PRIMARY KEY, -- Identificador único autoincrementable del nivel de categoría
+    nivel_riesgo VARCHAR(50) NOT NULL,                        -- Nivel de riesgo asociado a la categoría
+    frecuencia_inspeccion VARCHAR(50) NOT NULL               -- Frecuencia de inspección recomendada (Ejemplo: Anual, Mensual)
+);
+
+-- Tabla TipoFactor:
+-- Almacena los diferentes tipos de factores presentes en las evaluaciones, como Volumen de Producción, Cumplimiento BPM, etc.
+
+CREATE TABLE TipoFactor (
+    id_tipo_factor INT IDENTITY(1,1) NOT NULL PRIMARY KEY, -- Identificador único autoincrementable del tipo de factor
+    nombre VARCHAR(100) NOT NULL                          -- Nombre descriptivo del tipo de factor
+);
+
+-- Tabla Categoria_med:
+-- Almacena las categorías de medicamentos, como "Antibióticos", "Analgésicos", etc.
+
+CREATE TABLE Categoria_med (
+    id_categoria_med INT IDENTITY(1,1) NOT NULL PRIMARY KEY, -- Identificador único autoincrementable para cada categoría
+    nombre_categoria VARCHAR(100) NOT NULL                  -- Nombre descriptivo de la categoría
+);
+
+
+-- Tabla Nivel_riesgo:
+-- Almacena los diferentes niveles de riesgo, su nombre y puntuación asociada.
+
+CREATE TABLE Nivel_riesgo (
+    id_nivelriesgo INT IDENTITY(1,1) NOT NULL PRIMARY KEY, -- Identificador único autoincrementable para cada nivel de riesgo
+    nombre_riesgo VARCHAR(20) NOT NULL,                   -- Nombre descriptivo del nivel de riesgo
+    puntuacion INT NOT NULL                               -- Puntuación asociada al nivel de riesgo
+);
+
+-- Tabla Proveedor:
+-- Almacena información de los proveedores, incluyendo su RNC, ubicación, fechas de evaluación y estado.
+
+CREATE TABLE Proveedor (
+    id_proveedor INT IDENTITY(1,1) NOT NULL PRIMARY KEY, -- Identificador único autoincrementable del proveedor
+    id_categoria_nivel INT NOT NULL,                   -- Relación con la tabla Categoria_nivel
+    id_usuario INT NOT NULL,                           -- Relación con la tabla Usuario
+    RNC NVARCHAR(11) NOT NULL UNIQUE,                 -- Registro Nacional de Contribuyentes único del proveedor
+    ubicacion NVARCHAR(255) NOT NULL,                 -- Dirección o ubicación del proveedor
+    fecha_ultima_evaluacion DATE NOT NULL,            -- Fecha de la última evaluación realizada al proveedor
+    fecha_proxima_evaluacion DATE NOT NULL,           -- Fecha programada para la próxima evaluación
+    -- Claves foráneas
+    CONSTRAINT FK_Proveedor_CategoriaNivel FOREIGN KEY (id_categoria_nivel) REFERENCES Categoria_nivel(id_categoria_nivel),
+    CONSTRAINT FK_Proveedor_Usuario FOREIGN KEY (id_usuario) REFERENCES Usuario(id_usuario)
+);
+
+-- Tabla Evaluacion:
+-- Almacena las evaluaciones realizadas a los proveedores, incluyendo los riesgos calculados, el inspector responsable y otros detalles.
+
+CREATE TABLE Evaluacion (
+    id_evaluacion INT IDENTITY(1,1) NOT NULL PRIMARY KEY, -- Identificador único autoincrementable de la evaluación
+    id_proveedor INT NOT NULL,                           -- Referencia al proveedor evaluado
+    id_categoria_nivel INT NOT NULL,                     -- Referencia a la categoría de nivel de riesgo
+    id_inspector INT NOT NULL,                           -- Identificador del inspector que realizó la evaluación
+    riesgo_establecimiento DECIMAL(3,3) NULL,            -- Riesgo del establecimiento tomando en cuenta los factores
+    resultado DECIMAL(3,3) NULL,                         -- Riesgo total del proveedor como resultado de la evaluación
+    observacion VARCHAR(255) NULL,                       -- Comentarios adicionales del inspector
+    fecha DATE NOT NULL,                                 -- Fecha en que se realizó o realizará la evaluación
+    status_evaluacion VARCHAR(50) NOT NULL,              -- Estado de la evaluación (Pendiente, En Proceso, Finalizada)
+
+    -- Claves foráneas
+    CONSTRAINT FK_Evaluacion_Proveedor FOREIGN KEY (id_proveedor) REFERENCES Proveedor(id_proveedor),
+    CONSTRAINT FK_Evaluacion_CategoriaNivel FOREIGN KEY (id_categoria_nivel) REFERENCES Categoria_nivel(id_categoria_nivel),
+    CONSTRAINT FK_Evaluacion_Inspector FOREIGN KEY (id_inspector) REFERENCES Inspector(id_inspector)
+);
+
+-- Tabla Factor:
+-- Almacena los factores de riesgo asociados a las evaluaciones, con su categoría, puntaje y valor calculado.
+
+CREATE TABLE Factor (
+    id_factor INT IDENTITY(1,1) NOT NULL PRIMARY KEY,  -- Identificador único autoincrementable del factor de riesgo
+    id_tipofactor INT NOT NULL,                       -- Relación con la tabla TipoFactor
+    id_evaluacion INT NOT NULL,                       -- Relación con la tabla Evaluacion
+    categoriariesgo NVARCHAR(255) NOT NULL,           -- Categoría de riesgo asociada al factor
+    puntaje NVARCHAR(50) NOT NULL,                    -- Puntaje asignado al factor dentro de la evaluación
+    valor DECIMAL(3,2) NOT NULL,                      -- Valor calculado del factor basado en el peso y puntaje asignados
+
+    -- Claves foráneas
+    CONSTRAINT FK_Factor_TipoFactor FOREIGN KEY (id_tipofactor) REFERENCES TipoFactor(id_tipo_factor),
+    CONSTRAINT FK_Factor_Evaluacion FOREIGN KEY (id_evaluacion) REFERENCES Evaluacion(id_evaluacion)
+);
+
+
+-- Tabla Complejidad_med:
+-- Almacena los niveles de complejidad asociados a los medicamentos.
+
+-- Tabla Complejidad_med:
+-- Almacena los niveles de complejidad asociados a los medicamentos.
+
+CREATE TABLE Complejidad_med (
+    id_complejidad INT IDENTITY(1,1) NOT NULL PRIMARY KEY, -- Identificador único autoincrementable para la complejidad
+    nombre_complejidad VARCHAR(50) NOT NULL,               -- Nombre descriptivo del nivel de complejidad (Ejemplo: Química, Microquímica)
+
+);
+
+ALTER TABLE Complejidad_med
+DROP COLUMN id_medicamento;
+
+
+-- Tabla Medicamento:
+-- Almacena información de los medicamentos, incluyendo nombre, efectos secundarios, función, estado y complejidad.
+
+CREATE TABLE Medicamento (
+    id_medicamento INT IDENTITY(1,1) NOT NULL PRIMARY KEY, -- Identificador único autoincrementable del medicamento
+    id_complejidad INT NOT NULL,                          -- Relación con la tabla Complejidad_med
+    nombre_med VARCHAR(100) NOT NULL,                    -- Nombre del medicamento
+    efectos_secundarios TEXT NULL,                       -- Descripción de los efectos secundarios asociados
+    funcion_med VARCHAR(230) NOT NULL,                   -- Función principal del medicamento
+    status_medicamento NVARCHAR(50) NOT NULL,            -- Estado del medicamento en el sistema (Ejemplo: Activo, Inactivo)
+
+    -- Clave foránea
+    CONSTRAINT FK_Medicamento_Complejidad FOREIGN KEY (id_complejidad) REFERENCES Complejidad_med(id_complejidad)
+);
+
+-- Tabla Subcategoria_med:
+-- Almacena las subcategorías de medicamentos, incluyendo su asociación con categorías y niveles de riesgo.
+
+CREATE TABLE Subcategoria_med (
+    id_subcategoria INT IDENTITY(1,1) NOT NULL PRIMARY KEY, -- Identificador único autoincrementable para la subcategoría
+    id_categoria_med INT NOT NULL,                        -- Relación con la tabla Categoria_med
+    id_nivelriesgo INT NOT NULL,                          -- Relación con la tabla Nivel_riesgo
+    nombre_subcategoria VARCHAR(150) NOT NULL,            -- Nombre descriptivo de la subcategoría (Ejemplo: Antiinflamatorios)
+
+    -- Claves foráneas
+    CONSTRAINT FK_Subcategoria_Categoria FOREIGN KEY (id_categoria_med) REFERENCES Categoria_med(id_categoria_med),
+    CONSTRAINT FK_Subcategoria_NivelRiesgo FOREIGN KEY (id_nivelriesgo) REFERENCES Nivel_riesgo(id_nivelriesgo)
+);
+
+
+-- Tabla Solicitud:
+-- Registra las solicitudes de medicamentos, incluyendo información del proveedor, medicamento, cantidad, método de producción y comentarios.
+
+CREATE TABLE Solicitud (
+    id_solicitud BIGINT IDENTITY(1,1) NOT NULL PRIMARY KEY, -- Identificador único autoincrementable para cada solicitud
+    id_subcategoria INT NOT NULL,                          -- Relación con la tabla Subcategoria_med
+    id_medicamento INT NOT NULL,                           -- Relación con la tabla Medicamento
+    id_proveedor INT NOT NULL,                             -- Relación con la tabla Proveedor
+    metodo_produccion VARCHAR(150) NOT NULL,               -- Método de producción del medicamento solicitado
+    cantidad_med INT NOT NULL,                             -- Cantidad de medicamento solicitado
+    status_solicitud VARCHAR(50) NOT NULL,                 -- Estado actual de la solicitud (Ejemplo: Pendiente, En Proceso, Completada)
+    comentario VARCHAR(255) NULL,                          -- Comentarios adicionales sobre la solicitud
+
+    -- Claves foráneas
+    CONSTRAINT FK_Solicitud_Subcategoria FOREIGN KEY (id_subcategoria) REFERENCES Subcategoria_med(id_subcategoria),
+    CONSTRAINT FK_Solicitud_Medicamento FOREIGN KEY (id_medicamento) REFERENCES Medicamento(id_medicamento),
+    CONSTRAINT FK_Solicitud_Proveedor FOREIGN KEY (id_proveedor) REFERENCES Proveedor(id_proveedor)
+);
