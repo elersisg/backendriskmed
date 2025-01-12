@@ -1,0 +1,546 @@
+--Todos los stored procedures que se han hecho y modificado hasta ahora 
+
+-- Tabla solicitud 
+
+-- Insertar una nueva solicitud
+CREATE PROCEDURE InsertSolicitud
+    @id_subcategoria INT,
+    @id_medicamento INT,
+    @id_proveedor INT,
+    @metodo_produccion VARCHAR(150),
+    @cantidad_med INT,
+    @status_solicitud VARCHAR(50),
+    @comentario VARCHAR(255) = NULL
+AS
+BEGIN
+    INSERT INTO Solicitud (id_subcategoria, id_medicamento, id_proveedor, metodo_produccion, cantidad_med, status_solicitud, comentario)
+    VALUES (@id_subcategoria, @id_medicamento, @id_proveedor, @metodo_produccion, @cantidad_med, @status_solicitud, @comentario);
+
+    SELECT SCOPE_IDENTITY() AS NuevoID; -- Retorna el ID de la nueva solicitud
+END;
+
+-- Obtener solicitudes filtradas por estado
+CREATE PROCEDURE SelectSolicitudesByStatus
+    @status_solicitud VARCHAR(50)
+AS
+BEGIN
+    SELECT 
+        id_solicitud,
+        id_subcategoria,
+        id_medicamento,
+        id_proveedor,
+        metodo_produccion,
+        cantidad_med,
+        status_solicitud,
+        comentario
+    FROM Solicitud
+    WHERE status_solicitud = @status_solicitud;
+END;
+
+-- Actualizar el estado y comentario de una solicitud
+CREATE PROCEDURE UpdateSolicitudStatus
+    @id_solicitud BIGINT,
+    @status_solicitud VARCHAR(50),
+    @comentario VARCHAR(255)
+AS
+BEGIN
+    UPDATE Solicitud
+    SET status_solicitud = @status_solicitud,
+        comentario = @comentario
+    WHERE id_solicitud = @id_solicitud;
+
+    -- Retornar la solicitud actualizada
+    SELECT *
+    FROM Solicitud
+    WHERE id_solicitud = @id_solicitud;
+END;
+
+--Tabla proveedor 
+
+-- Insertar un nuevo proveedor
+ALTER PROCEDURE InsertProveedor
+    @id_categoria_nivel INT,
+    @id_usuario INT,
+    @RNC NVARCHAR(11),
+    @ubicacion NVARCHAR(255),
+    @fecha_ultima_evaluacion DATE,
+    @fecha_proxima_evaluacion DATE
+AS
+BEGIN
+    INSERT INTO Proveedor (id_categoria_nivel, id_usuario, RNC, ubicacion, fecha_ultima_evaluacion, fecha_proxima_evaluacion)
+    VALUES (@id_categoria_nivel, @id_usuario, @RNC, @ubicacion, @fecha_ultima_evaluacion, @fecha_proxima_evaluacion);
+
+    SELECT SCOPE_IDENTITY() AS NuevoID; -- Retorna el ID del nuevo proveedor
+END;
+
+-- Obtener proveedores ordenados por fecha de última evaluación y próxima evaluación
+ALTER PROCEDURE SelectProveedoresOrdered
+    @nombre NVARCHAR(100) = NULL,
+    @status_usuario VARCHAR(10) = NULL -- Nuevo parámetro para filtrar por status_usuario
+AS
+BEGIN
+    SELECT 
+        P.id_proveedor,
+        P.id_categoria_nivel,
+        P.id_usuario,
+        P.RNC,
+        P.ubicacion,
+        P.fecha_ultima_evaluacion,
+        P.fecha_proxima_evaluacion
+    FROM Proveedor P
+    INNER JOIN Usuario U ON P.id_usuario = U.id_usuario  -- Unir con la tabla Usuario para acceder al nombre y status
+    WHERE (@nombre IS NULL OR U.nombre LIKE '%' + @nombre + '%')  -- Filtrar por nombre del proveedor
+    AND (@status_usuario IS NULL OR U.status_usuario = @status_usuario)  -- Filtrar por status_usuario
+    ORDER BY 
+        -- Priorizar filas con fecha_ultima_evaluacion NULL
+        CASE WHEN P.fecha_ultima_evaluacion IS NULL THEN 0 ELSE 1 END ASC, 
+        -- Luego ordenar por fecha_proxima_evaluacion ascendente
+        P.fecha_proxima_evaluacion ASC;
+END;
+
+
+-- Actualizar la ubicación de un proveedor
+CREATE PROCEDURE UpdateProveedorUbicacion
+    @id_proveedor INT,
+    @ubicacion NVARCHAR(255)
+AS
+BEGIN
+    UPDATE Proveedor
+    SET ubicacion = @ubicacion
+    WHERE id_proveedor = @id_proveedor;
+
+    -- Retornar el proveedor actualizado
+    SELECT *
+    FROM Proveedor
+    WHERE id_proveedor = @id_proveedor;
+END;
+
+--Seleccionar proveedor segun su informacion
+
+CREATE PROCEDURE SelectProveedorInfo
+    @id_proveedor INT
+AS
+BEGIN
+    SELECT 
+        -- Información de la tabla Proveedor
+        P.RNC,
+        P.ubicacion,
+        P.fecha_ultima_evaluacion,
+        P.fecha_proxima_evaluacion,
+
+        -- Información de la tabla Categoria_nivel
+        CN.nivel_riesgo,
+        CN.frecuencia_inspeccion,
+
+        -- Información de la tabla Usuario
+        U.nombre,
+        U.email,
+        U.contrasena,
+        U.status_usuario,
+
+        -- Información de la tabla Categoria
+        C.nombre_categoria AS categoria_nombre, -- Actualizado con el nombre correcto de la columna
+
+        -- Información de la tabla Subcategoria
+        SM.nombre_subcategoria,
+
+        -- Información de la tabla Nivel_riesgo
+        NR.nombre_riesgo,
+        NR.puntuacion,
+
+        -- Información de la tabla Medicamento
+        M.nombre_med AS medicamento_nombre
+
+    FROM Proveedor P
+    -- Unimos con las tablas correspondientes
+    INNER JOIN Categoria_nivel CN ON P.id_categoria_nivel = CN.id_categoria_nivel
+    INNER JOIN Usuario U ON P.id_usuario = U.id_usuario
+    LEFT JOIN Solicitud S ON P.id_proveedor = S.id_proveedor
+    LEFT JOIN Subcategoria_med SM ON S.id_subcategoria = SM.id_subcategoria
+    LEFT JOIN Nivel_riesgo NR ON SM.id_nivelriesgo = NR.id_nivelriesgo
+    LEFT JOIN Medicamento M ON S.id_medicamento = M.id_medicamento
+    LEFT JOIN Categoria_med C ON SM.id_categoria_med = C.id_categoria_med
+
+    WHERE P.id_proveedor = @id_proveedor; -- Filtrar por id_proveedor
+
+END;
+
+-- Actualizar proveedor 
+CREATE PROCEDURE ActualizarProveedor
+    @id_proveedor INT,
+    @id_categoria_nivel INT,
+    @fecha_ultima_evaluacion DATE,
+    @fecha_proxima_evaluacion DATE
+AS
+BEGIN
+    UPDATE Proveedor
+    SET 
+        id_categoria_nivel = @id_categoria_nivel,
+        fecha_ultima_evaluacion = @fecha_ultima_evaluacion,
+        fecha_proxima_evaluacion = @fecha_proxima_evaluacion
+    WHERE 
+        id_proveedor = @id_proveedor;
+END;
+
+--Tabla inspector 
+
+-- Insertar un nuevo inspector
+CREATE PROCEDURE InsertInspector
+    @id_usuario INT,
+    @cedula_inspector VARCHAR(11)
+AS
+BEGIN
+    INSERT INTO Inspector (id_usuario, cedula_inspector)
+    VALUES (@id_usuario, @cedula_inspector);
+
+    SELECT SCOPE_IDENTITY() AS NuevoID; -- Retorna el ID del nuevo inspector
+END;
+
+-- Obtener lista de inspectores con filtro opcional por nombre
+ALTER PROCEDURE SelectInspectoresByNombre
+    @nombre NVARCHAR(100) = NULL
+AS
+BEGIN
+    SELECT 
+        I.id_inspector,
+        U.nombre AS nombre_inspector,
+        I.cedula_inspector,
+        U.status_usuario AS status_usuario,     -- Agregado: status del usuario
+        U.email AS correo_usuario               -- Agregado: correo del usuario
+    FROM Inspector I
+    INNER JOIN Usuario U ON I.id_usuario = U.id_usuario
+    WHERE (@nombre IS NULL OR U.nombre LIKE '%' + @nombre + '%');
+END;
+
+-- Obtener inspectores con evaluaciones recientes
+CREATE PROCEDURE SelectInspectoresWithEvaluations
+AS
+BEGIN
+    SELECT 
+        I.id_inspector,
+        U.nombre AS nombre_inspector,
+        I.cedula_inspector,
+        E.fecha AS fecha_evaluacion,
+        E.resultado AS resultado_evaluacion
+    FROM Inspector I
+    INNER JOIN Usuario U ON I.id_usuario = U.id_usuario
+    INNER JOIN Evaluacion E ON I.id_inspector = E.id_inspector
+    ORDER BY E.fecha DESC; -- Ordenar por la fecha más reciente
+END;
+
+--Usuario 
+
+-- Insertar un nuevo usuario
+CREATE PROCEDURE InsertUsuario
+    @rol VARCHAR(20),
+    @nombre VARCHAR(100),
+    @email NVARCHAR(150),
+    @contrasena VARCHAR(256),
+    @status_usuario VARCHAR(10)
+AS
+BEGIN
+    INSERT INTO Usuario (rol, nombre, email, contrasena, status_usuario)
+    VALUES (@rol, @nombre, @email, @contrasena, @status_usuario);
+
+    SELECT SCOPE_IDENTITY() AS NuevoID; -- Retorna el ID del nuevo usuario
+END;
+
+-- Autenticación de usuario en login
+CREATE PROCEDURE AuthenticateUsuario
+    @email NVARCHAR(150),
+    @contrasena VARCHAR(256)
+AS
+BEGIN
+    SELECT 
+        id_usuario,
+        rol,
+        nombre,
+        status_usuario
+    FROM Usuario
+    WHERE email = @email AND contrasena = @contrasena;
+END;
+
+-- Modificar el procedimiento almacenado existente
+ALTER PROCEDURE UpdateUsuario
+    @id_usuario INT,
+    @contrasena VARCHAR(256) = NULL,
+    @email NVARCHAR(150) = NULL,
+    @status_usuario VARCHAR(10) = NULL
+AS
+BEGIN
+    -- Actualizar los datos del usuario según los parámetros proporcionados
+    UPDATE Usuario
+    SET 
+        contrasena = ISNULL(@contrasena, contrasena),
+        email = ISNULL(@email, email),
+        status_usuario = ISNULL(@status_usuario, status_usuario)
+    WHERE id_usuario = @id_usuario;
+
+    -- Retornar los datos actualizados del usuario
+    SELECT * FROM Usuario WHERE id_usuario = @id_usuario;
+END;
+
+
+
+--Medicamento 
+
+-- Insertar un nuevo medicamento
+CREATE PROCEDURE InsertMedicamento
+    @id_complejidad INT,
+    @nombre_med VARCHAR(100),
+    @efectos_secundarios TEXT = NULL,
+    @funcion_med VARCHAR(230),
+    @status_medicamento NVARCHAR(50)
+AS
+BEGIN
+    INSERT INTO Medicamento (id_complejidad, nombre_med, efectos_secundarios, funcion_med, status_medicamento)
+    VALUES (@id_complejidad, @nombre_med, @efectos_secundarios, @funcion_med, @status_medicamento);
+
+    SELECT SCOPE_IDENTITY() AS NuevoID; -- Retorna el ID del nuevo medicamento
+END;
+
+
+-- Seleccionar medicamentos filtrados por subcategoría
+ALTER PROCEDURE SelectMedicamentoBySubcategoria
+AS
+BEGIN
+    SELECT 
+        M.id_medicamento, 
+        M.nombre_med, 
+        M.efectos_secundarios, 
+        M.funcion_med, 
+        M.status_medicamento, 
+        CM.nombre_complejidad
+    FROM 
+        Medicamento M
+    INNER JOIN 
+        Complejidad_med CM 
+        ON M.id_complejidad = CM.id_complejidad
+    INNER JOIN 
+        Subcategoria_med SC 
+        ON CM.id_medicamento = SC.id_subcategoria
+    ORDER BY 
+        M.nombre_med ASC;
+END;
+
+-- Actualizar el estado de un medicamento
+	CREATE PROCEDURE UpdateMedicamentoStatus
+		@id_medicamento INT,
+		@status_medicamento NVARCHAR(50)
+	AS
+	BEGIN
+		UPDATE Medicamento
+		SET status_medicamento = @status_medicamento
+		WHERE id_medicamento = @id_medicamento;
+
+		SELECT * FROM Medicamento WHERE id_medicamento = @id_medicamento; -- Retorna los datos actualizados del medicamento
+	END;
+
+--Tabla subcategoria 
+
+-- Seleccionar subcategorías filtradas por categoría
+CREATE PROCEDURE SelectSubcategoriaByCategoria
+    @id_categoria_med INT
+AS
+BEGIN
+    SELECT 
+        SC.id_subcategoria,
+        SC.nombre_subcategoria,
+        NR.nombre_riesgo,
+        NR.puntuacion
+    FROM Subcategoria_med SC
+    INNER JOIN Nivel_riesgo NR ON SC.id_nivelriesgo = NR.id_nivelriesgo
+    WHERE SC.id_categoria_med = @id_categoria_med;
+END;
+
+--Categoria_med
+
+-- Seleccionar todas las categorías
+CREATE PROCEDURE SelectCategoria
+AS
+BEGIN
+    SELECT 
+        id_categoria_med,
+        nombre_categoria
+    FROM Categoria_med;
+END;
+
+--Nivel_riesgo 
+
+CREATE PROCEDURE UpdateNivelRiesgo
+    @id_nivelriesgo INT,
+    @nombre_riesgo VARCHAR(20) = NULL,
+    @puntuacion INT = NULL
+AS
+BEGIN
+    -- Actualizar los datos del nivel de riesgo según los parámetros proporcionados
+    UPDATE Nivel_riesgo
+    SET 
+        nombre_riesgo = ISNULL(@nombre_riesgo, nombre_riesgo),
+        puntuacion = ISNULL(@puntuacion, puntuacion)
+    WHERE id_nivelriesgo = @id_nivelriesgo;
+
+    -- Retornar los datos actualizados del nivel de riesgo
+    SELECT * FROM Nivel_riesgo WHERE id_nivelriesgo = @id_nivelriesgo;
+END;
+
+-- Seleccionar niveles de riesgo con datos relacionados
+CREATE PROCEDURE SelectNivelRiesgoWithJoins
+AS
+BEGIN
+    SELECT 
+        NR.id_nivelriesgo,
+        NR.nombre_riesgo,
+        NR.puntuacion,
+        SC.id_subcategoria,
+        SC.nombre_subcategoria,
+        CM.id_categoria_med,
+        CM.nombre_categoria
+    FROM Nivel_riesgo NR
+    LEFT JOIN Subcategoria_med SC ON NR.id_nivelriesgo = SC.id_nivelriesgo
+    LEFT JOIN Categoria_med CM ON SC.id_categoria_med = CM.id_categoria_med
+    ORDER BY NR.puntuacion DESC; -- Ordenar por puntuación descendente
+END;
+
+--Evaluacion
+
+-- Insertar una nueva evaluación
+CREATE PROCEDURE InsertEvaluacion
+    @id_proveedor INT,
+    @id_categoria_nivel INT,
+    @id_inspector INT,
+    @riesgo_establecimiento DECIMAL(3,3) = NULL,
+    @resultado DECIMAL(3,3) = NULL,
+    @observacion VARCHAR(255) = NULL,
+    @fecha DATE,
+    @status_evaluacion VARCHAR(50)
+AS
+BEGIN
+    INSERT INTO Evaluacion (id_proveedor, id_categoria_nivel, id_inspector, riesgo_establecimiento, resultado, observacion, fecha, status_evaluacion)
+    VALUES (@id_proveedor, @id_categoria_nivel, @id_inspector, @riesgo_establecimiento, @resultado, @observacion, @fecha, @status_evaluacion);
+
+    SELECT SCOPE_IDENTITY() AS NuevoID; -- Retorna el ID de la nueva evaluación
+END;
+
+-- Seleccionar evaluaciones filtradas por proveedor, inspector y fecha
+ALTER PROCEDURE SelectEvaluacionWithFilters
+    @id_proveedor INT = NULL,
+    @id_inspector INT = NULL,
+    @fecha_inicio DATE = NULL,
+    @fecha_fin DATE = NULL
+AS
+BEGIN
+    SELECT 
+        E.id_evaluacion,
+        E.id_proveedor,
+        P.ubicacion AS ubicacion_proveedor,
+        E.id_inspector,
+        U.nombre AS nombre_inspector,
+        E.fecha,
+        E.riesgo_establecimiento,
+        E.resultado,
+        E.observacion,
+        E.status_evaluacion
+    FROM Evaluacion E
+    INNER JOIN Proveedor P ON E.id_proveedor = P.id_proveedor
+    INNER JOIN Inspector I ON E.id_inspector = I.id_inspector
+    INNER JOIN Usuario U ON I.id_usuario = U.id_usuario
+    WHERE 
+        (@id_proveedor IS NULL OR E.id_proveedor = @id_proveedor) AND
+        (@id_inspector IS NULL OR E.id_inspector = @id_inspector) AND
+        (@fecha_inicio IS NULL OR @fecha_fin IS NULL OR E.fecha BETWEEN @fecha_inicio AND @fecha_fin)
+    ORDER BY E.fecha DESC; -- Ordenar por fecha descendente
+END;
+
+-- Actualizar una evaluación
+CREATE PROCEDURE UpdateEvaluacion
+    @id_evaluacion INT,
+    @id_categoria_nivel INT,
+    @riesgo_establecimiento DECIMAL(3,3),
+    @resultado DECIMAL(3,3),
+    @observacion VARCHAR(255),
+    @status_evaluacion VARCHAR(50)
+AS
+BEGIN
+    UPDATE Evaluacion
+    SET 
+        id_categoria_nivel = @id_categoria_nivel,
+        riesgo_establecimiento = @riesgo_establecimiento,
+        resultado = @resultado,
+        observacion = @observacion,
+        status_evaluacion = @status_evaluacion
+    WHERE id_evaluacion = @id_evaluacion;
+
+    SELECT * FROM Evaluacion WHERE id_evaluacion = @id_evaluacion; -- Retorna la evaluación actualizada
+END;
+
+--Factor:
+
+-- Insertar un nuevo factor
+CREATE PROCEDURE InsertFactor
+    @id_tipofactor INT,
+    @id_evaluacion INT,
+    @categoriariesgo NVARCHAR(255),
+    @puntaje NVARCHAR(50),
+    @valor DECIMAL(3,2)
+AS
+BEGIN
+    INSERT INTO Factor (id_tipofactor, id_evaluacion, categoriariesgo, puntaje, valor)
+    VALUES (@id_tipofactor, @id_evaluacion, @categoriariesgo, @puntaje, @valor);
+
+    SELECT SCOPE_IDENTITY() AS NuevoID; -- Retorna el ID del nuevo factor
+END;
+
+-- Seleccionar factores por evaluación
+CREATE PROCEDURE SelectFactorByEvaluacion
+    @id_evaluacion INT
+AS
+BEGIN
+    SELECT 
+        F.id_factor,
+        F.categoriariesgo,
+        F.puntaje,
+        F.valor,
+        TF.nombre AS nombre_tipofactor,
+        E.fecha AS fecha_evaluacion
+    FROM Factor F
+    INNER JOIN TipoFactor TF ON F.id_tipofactor = TF.id_tipo_factor
+    INNER JOIN Evaluacion E ON F.id_evaluacion = E.id_evaluacion
+    WHERE F.id_evaluacion = @id_evaluacion;
+END;
+
+--Tipo factor 
+-- Seleccionar todos los tipos de factores
+CREATE PROCEDURE SelectTipoFactor
+AS
+BEGIN
+    SELECT 
+        id_tipo_factor,
+        nombre
+    FROM TipoFactor;
+END;
+
+--categoria_nivel
+
+-- Seleccionar todas las categorías de nivel
+CREATE PROCEDURE SelectCategoriaNivel
+AS
+BEGIN
+    SELECT 
+        id_categoria_nivel,
+        nivel_riesgo,
+        frecuencia_inspeccion
+    FROM Categoria_nivel;
+END;
+
+--complejidad_med
+
+-- Seleccionar todas las complejidades
+ALTER PROCEDURE SelectComplejidad
+AS
+BEGIN
+    SELECT 
+        id_complejidad,
+        nombre_complejidad
+    FROM Complejidad_med;
+END;
