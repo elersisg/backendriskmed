@@ -14,7 +14,6 @@ const createUsuario = async (req, res, next) => {
 
 // Autenticar usuario
 const jwt = require('jsonwebtoken');
-const usuarioService = require('../services/usuario.service');
 
 // Inicio de sesión
 const loginUsuario = async (req, res, next) => {
