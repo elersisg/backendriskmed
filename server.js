@@ -62,6 +62,8 @@ app.use('/api/solicitud', solicitudRoutes);
 app.use('/api/evaluacion', evaluacionRoutes);
 app.use('/api/factor', factorRoutes);
 
+//Agregar el fetch y lo necesario para el token de autenticación
+
 
 const swaggerDocs = swaggerJSDoc(swaggerOptions);
 app.use('/api-docs', swaggerUI.serve, swaggerUI.setup(swaggerDocs));
