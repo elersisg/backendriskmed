@@ -1,16 +1,21 @@
-const { poolPromise } = require('../config/dbConfig.js');
+const { connectToDatabase } = require('../config/dbConfig.js');
 
 // Insertar un nuevo usuario
 const insertUsuario = async (rol, nombre, email, contrasena, status_usuario) => {
-    const pool = await poolPromise;
-    const result = await pool.request()
-        .input('rol', rol)
-        .input('nombre', nombre)
-        .input('email', email)
-        .input('contrasena', contrasena)
-        .input('status_usuario', status_usuario)
-        .execute('InsertUsuario');
-    return result.recordset[0]; // Retorna el ID del nuevo usuario
+    try {
+        const pool = await connectToDatabase(); // Usa la función exportada para obtener la conexión
+        const result = await pool.request()
+            .input('rol', rol)
+            .input('nombre', nombre)
+            .input('email', email)
+            .input('contrasena', contrasena)
+            .input('status_usuario', status_usuario)
+            .execute('InsertUsuario');
+        return result.recordset[0];
+    } catch (error) {
+        console.error('Error en insertUsuario:', error.message);
+        throw error;
+    }
 };
 
 // Autenticar usuario

@@ -1,14 +1,44 @@
 require('dotenv').config(); // Cargar variables de entorno
+const sql = require('mssql'); // Importar el módulo mssql
 
-// Configuración de la base de datos
+let pool; // Añadido para manejar la conexión
+
+// Configuración de la base de datos (manteniendo lo existente)
 module.exports = {
-    server: process.env.DB_SERVER || 'localhost',
-    user: process.env.DB_USER, // Usuario de la base de datos
-    password: process.env.DB_PASSWORD, // Contraseña de la base de datos
-    port: parseInt(process.env.DB_PORT, 10), // Asegurar que el puerto sea un número
-    database: process.env.DB_NAME, // Nombre de la base de datos
+    server: process.env.DB_SERVER || 'GABRIEL-LAPTOP',
+    user: process.env.DB_USER || 'root',
+    password: process.env.DB_PASSWORD || '040805',
+    port: parseInt(process.env.DB_PORT, 10) || 1433,
+    database: process.env.DB_NAME || 'RISKMED',
     options: {
-        encrypt: true, 
-        trustServerCertificate: true, 
+        encrypt: true,
+        trustServerCertificate: true,
+    },
+
+    // Exportar sql y la función de conexión
+    sql,
+
+    // Función para conectar a la base de datos
+    connectToDatabase: async () => {
+        try {
+            if (!pool) {
+                pool = await sql.connect({
+                    server: process.env.DB_SERVER || 'GABRIEL-LAPTOP',
+                    user: process.env.DB_USER || 'root',
+                    password: process.env.DB_PASSWORD || '040805',
+                    port: parseInt(process.env.DB_PORT, 10) || 1433,
+                    database: process.env.DB_NAME || 'RISKMED',
+                    options: {
+                        encrypt: true,
+                        trustServerCertificate: true,
+                    },
+                });
+                console.log('Conexión a la base de datos establecida.');
+            }
+            return pool;
+        } catch (error) {
+            console.error('Error al conectar a la base de datos:', error.message);
+            throw error;
+        }
     },
 };

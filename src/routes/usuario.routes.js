@@ -1,5 +1,6 @@
 const express = require('express');
 const router = express.Router();
+const { authenticateToken } = require('../middleware/auth.middleware.js');
 const usuarioController = require('../controllers/usuario.controller');
 
 /**
@@ -90,7 +91,7 @@ router.post('/login', usuarioController.loginUsuario);
  *       200:
  *         description: Usuario actualizado exitosamente
  */
-router.put('/:id_usuario', usuarioController.updateUsuario);
+router.put('/:id_usuario', authenticateToken, usuarioController.updateUsuario);
 
 /**
  * @swagger
@@ -110,6 +111,6 @@ router.put('/:id_usuario', usuarioController.updateUsuario);
  *       404:
  *         description: Usuario no encontrado
  */
-router.delete('/:id_usuario', usuarioController.deleteUsuario);
+router.delete('/:id_usuario', authenticateToken, usuarioController.deleteUsuario);
 
 module.exports = router;

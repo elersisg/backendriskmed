@@ -27,7 +27,6 @@ const deleteUsuario = async (id_usuario) => {
     return wasDeleted;
 };
 
-
 module.exports = {
     createUsuario,
     loginUsuario,

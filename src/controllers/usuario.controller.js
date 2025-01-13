@@ -1,5 +1,6 @@
+
 const usuarioService = require('../services/usuario.service');
-const { CreateUsuarioDTO, LoginUsuarioDTO, UpdateUsuarioDTO } = require('../DTO/usuario.dto.js');
+const { CreateUsuarioDTO, LoginUsuarioDTO, UpdateUsuarioDTO } = require('../DTO/usuario.dto');
 
 // Crear un nuevo usuario
 const createUsuario = async (req, res, next) => {
@@ -38,7 +39,7 @@ const updateUsuario = async (req, res, next) => {
 // Eliminar usuario
 const deleteUsuario = async (req, res, next) => {
     try {
-        const { id_usuario } = req.params; // ID del usuario desde la URL
+        const { id_usuario } = req.params;
         await usuarioService.deleteUsuario(id_usuario);
         res.status(200).json({ message: 'Usuario eliminado exitosamente' });
     } catch (error) {
@@ -52,3 +53,4 @@ module.exports = {
     updateUsuario,
     deleteUsuario,
 };
+
