@@ -1,4 +1,4 @@
-const usuarioService = require('../services/usuario.service');
+const usuarioService = require('../services/usuario.service.js');
 const { CreateUsuarioDTO, LoginUsuarioDTO, UpdateUsuarioDTO } = require('../DTO/usuario.dto.js');
 
 // Crear un nuevo usuario

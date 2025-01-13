@@ -1,9 +1,13 @@
-const usuarioModel = require('../models/usuario.model');
+const bcrypt = require('bcrypt');
+const { insertUsuario } = require('../models/usuario.model.js');
 
-// Crear usuario
 const createUsuario = async (data) => {
-    const { rol, nombre, email, contrasena, status_usuario } = data;
-    return await usuarioModel.insertUsuario(rol, nombre, email, contrasena, status_usuario);
+    // Encriptar la contraseña
+    data.password = await bcrypt.hash(data.password, 10);
+
+    // Insertar usuario en la base de datos
+    const usuario = await insertUsuario(data);
+    return usuario;
 };
 
 // Autenticar usuario
@@ -26,7 +30,6 @@ const deleteUsuario = async (id_usuario) => {
     if (!wasDeleted) throw new Error('Usuario no encontrado');
     return wasDeleted;
 };
-
 
 module.exports = {
     createUsuario,

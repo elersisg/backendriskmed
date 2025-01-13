@@ -1,16 +1,17 @@
 const { poolPromise } = require('../config/dbConfig.js');
 
 // Insertar un nuevo usuario
-const insertUsuario = async (rol, nombre, email, contrasena, status_usuario) => {
+const insertUsuario = async (data) => {
     const pool = await poolPromise;
     const result = await pool.request()
-        .input('rol', rol)
-        .input('nombre', nombre)
-        .input('email', email)
-        .input('contrasena', contrasena)
-        .input('status_usuario', status_usuario)
-        .execute('InsertUsuario');
-    return result.recordset[0]; // Retorna el ID del nuevo usuario
+        .input('username', data.username)
+        .input('email', data.email)
+        .input('password', data.password)
+        .input('rnc', data.rnc)
+        .input('ubicacion', data.ubicacion)
+        .input('telefono', data.telefono)
+        .execute('InsertUsuario'); // Nombre del procedimiento almacenado
+    return result.recordset[0];
 };
 
 // Autenticar usuario
@@ -44,10 +45,18 @@ const deleteUsuario = async (id_usuario) => {
     return result.rowsAffected[0] > 0; // Retorna true si se eliminó el usuario, false si no
 };
 
+const getUsuarioByEmail = async (email) => {
+    const pool = await poolPromise;
+    const result = await pool.request()
+        .input('email', email)
+        .execute('GetUsuarioByEmail'); // Nombre del procedimiento almacenado
+    return result.recordset[0];
+};
 
 module.exports = {
     insertUsuario,
     authenticateUsuario,
     updateUsuario,
     deleteUsuario,
+    getUsuarioByEmail, 
 };

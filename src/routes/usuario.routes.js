@@ -1,6 +1,7 @@
 const express = require('express');
 const router = express.Router();
-const usuarioController = require('../controllers/usuario.controller');
+const usuarioController = require('../controllers/usuario.controller.js');
+const { authenticateToken } = require('../middleware/auth.middleware.js');
 
 /**
  * @swagger
@@ -11,7 +12,7 @@ const usuarioController = require('../controllers/usuario.controller');
 
 /**
  * @swagger
- * /usuarios:
+ * /usuarios/crear:
  *   post:
  *     summary: Crear un nuevo usuario
  *     tags: [Usuarios]
@@ -90,7 +91,7 @@ router.post('/login', usuarioController.loginUsuario);
  *       200:
  *         description: Usuario actualizado exitosamente
  */
-router.put('/:id_usuario', usuarioController.updateUsuario);
+router.put('/:id_usuario', authenticateToken, usuarioController.updateUsuario); // Protegida con autenticación
 
 /**
  * @swagger
@@ -110,6 +111,6 @@ router.put('/:id_usuario', usuarioController.updateUsuario);
  *       404:
  *         description: Usuario no encontrado
  */
-router.delete('/:id_usuario', usuarioController.deleteUsuario);
+router.delete('/:id_usuario', authenticateToken, usuarioController.deleteUsuario); // Protegida con autenticación
 
 module.exports = router;
