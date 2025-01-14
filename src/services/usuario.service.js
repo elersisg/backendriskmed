@@ -6,6 +6,11 @@ const createUsuario = async (data) => {
     return await usuarioModel.insertUsuario(rol, nombre, email, contrasena, status_usuario);
 };
 
+// Buscar usuario por email
+const findUsuarioByEmail = async (email) => {
+    return await usuarioModel.findUsuarioByEmail(email); // Asegúrate de que exista este método en usuario.model.js
+};
+
 // Autenticar usuario
 const loginUsuario = async (email, contrasena) => {
     const usuario = await usuarioModel.authenticateUsuario(email, contrasena);
@@ -29,6 +34,7 @@ const deleteUsuario = async (id_usuario) => {
 
 module.exports = {
     createUsuario,
+    findUsuarioByEmail, // Exporta el método para el controlador
     loginUsuario,
     updateUsuario,
     deleteUsuario,
