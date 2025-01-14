@@ -14,7 +14,6 @@ const insertInspector = async (id_usuario, cedula_inspector) => {
         throw error;
     }
 };
-
 // Obtener lista de inspectores con filtro por nombre
 const selectInspectorsByName = async (nombre) => {
     try {

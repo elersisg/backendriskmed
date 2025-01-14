@@ -91,7 +91,7 @@ router.post('/login', usuarioController.loginUsuario);
  *       200:
  *         description: Usuario actualizado exitosamente
  */
-router.put('/:id_usuario', authenticateToken, usuarioController.updateUsuario);
+router.put('/:id_usuario', usuarioController.updateUsuario);
 
 /**
  * @swagger
@@ -111,6 +111,6 @@ router.put('/:id_usuario', authenticateToken, usuarioController.updateUsuario);
  *       404:
  *         description: Usuario no encontrado
  */
-router.delete('/:id_usuario', authenticateToken, usuarioController.deleteUsuario);
+router.delete('/:id_usuario', usuarioController.deleteUsuario);
 
 module.exports = router;

@@ -5,9 +5,9 @@ let pool; // Añadido para manejar la conexión
 
 // Configuración de la base de datos (manteniendo lo existente)
 module.exports = {
-    server: process.env.DB_SERVER || 'DESKTOP-IVQK8SO',
-    user: process.env.DB_USER || 'sa',
-    password: process.env.DB_PASSWORD || 'enmanuel0805',
+    server: process.env.DB_SERVER || 'DESKTOP-LAURA',
+    user: process.env.DB_USER || 'loginlaura',
+    password: process.env.DB_PASSWORD || '190708',
     port: parseInt(process.env.DB_PORT, 10) || 1433,
     database: process.env.DB_NAME || 'RISKMED',
     options: {
@@ -23,9 +23,9 @@ module.exports = {
         try {
             if (!pool) {
                 pool = await sql.connect({
-                    server: process.env.DB_SERVER || 'DESKTOP-IVQK8SO',
-                    user: process.env.DB_USER || 'sa',
-                    password: process.env.DB_PASSWORD || 'enmanuel0805',
+                    server: process.env.DB_SERVER || 'DESKTOP-LAURA',
+                    user: process.env.DB_USER || 'loginlaura',
+                    password: process.env.DB_PASSWORD || '190708',
                     port: parseInt(process.env.DB_PORT, 10) || 1433,
                     database: process.env.DB_NAME || 'RISKMED',
                     options: {

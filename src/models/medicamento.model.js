@@ -1,8 +1,8 @@
-const { poolPromise } = require('../config/dbConfig');
+const { connectToDatabase } = require('../config/dbConfig');
 
 // Insertar un nuevo medicamento
 const insertMedicamento = async (data) => {
-    const pool = await poolPromise;
+    const pool = await connectToDatabase(); // Usar la función para obtener la conexión
     const { id_complejidad, nombre_med, efectos_secundarios, funcion_med, status_medicamento } = data;
     const result = await pool.request()
         .input('id_complejidad', id_complejidad)
@@ -16,14 +16,14 @@ const insertMedicamento = async (data) => {
 
 // Seleccionar medicamentos por subcategoría
 const selectMedicamentoBySubcategoria = async () => {
-    const pool = await poolPromise;
+    const pool = await connectToDatabase();
     const result = await pool.request().execute('SelectMedicamentoBySubcategoria');
     return result.recordset;
 };
 
 // Actualizar el estado de un medicamento
 const updateMedicamentoStatus = async (id_medicamento, status_medicamento) => {
-    const pool = await poolPromise;
+    const pool = await connectToDatabase();
     const result = await pool.request()
         .input('id_medicamento', id_medicamento)
         .input('status_medicamento', status_medicamento)

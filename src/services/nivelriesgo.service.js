@@ -7,11 +7,11 @@ const updateNivelRiesgo = async (id_nivelriesgo, data) => {
 };
 
 // Servicio para obtener niveles de riesgo con joins
-const selectNivelRiesgoWithJoins = async () => {
+const getNivelRiesgoWithJoins = async () => {
     return await nivelRiesgoModel.selectNivelRiesgoWithJoins();
 };
 
 module.exports = {
     updateNivelRiesgo,
-    selectNivelRiesgoWithJoins,
+    getNivelRiesgoWithJoins,
 };
