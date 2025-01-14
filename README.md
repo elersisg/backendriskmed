@@ -32,7 +32,7 @@ cd riskmed
 3. Instala las dependencias:
 
 ```bash
-npm install or node server.js
+npm install
 ```
 
 ## Ejecución del Proyecto
@@ -40,7 +40,7 @@ npm install or node server.js
 2. Ejecuta el servidor:
 
 ```bash
-npm start
+npm start or node server.js
 ```
 
 3. Accede a la documentación Swagger en:
