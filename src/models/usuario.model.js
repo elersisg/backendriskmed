@@ -1,3 +1,4 @@
+const jwt = require('jsonwebtoken');
 const { connectToDatabase } = require('../config/dbConfig.js');
 
 // Insertar un nuevo usuario
@@ -11,7 +12,21 @@ const insertUsuario = async (rol, nombre, email, contrasena, status_usuario) => 
             .input('contrasena', contrasena)
             .input('status_usuario', status_usuario)
             .execute('InsertUsuario');
-        return result.recordset[0];
+
+        const usuario = result.recordset[0]; // Obtener los datos del usuario insertado
+
+        // Generar el token
+        const token = jwt.sign(
+            { id: usuario.id_usuario, email: usuario.email, rol: usuario.rol }, // Datos que deseas incluir en el token
+            process.env.JWT_SECRET, // Tu clave secreta
+            { expiresIn: '1h' } // Tiempo de expiración del token
+        );
+
+        // Retorna los datos del usuario y el token generado
+        return {
+            usuario: usuario,
+            token: token
+        };
     } catch (error) {
         console.error('Error en insertUsuario:', error.message);
         throw error;
@@ -81,7 +96,7 @@ const deleteUsuario = async (id_usuario) => {
 module.exports = {
     insertUsuario,
     authenticateUsuario,
-    findUsuarioByEmail, // Exporta el nuevo método
+    findUsuarioByEmail,
     updateUsuario,
     deleteUsuario,
 };

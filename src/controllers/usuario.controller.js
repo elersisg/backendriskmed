@@ -12,12 +12,32 @@ const createUsuario = async (req, res, next) => {
         const hashedPassword = await bcrypt.hash(validatedData.contrasena, 10);
         validatedData.contrasena = hashedPassword;
 
+        // Crear el usuario
         const usuario = await usuarioService.createUsuario(validatedData);
-        res.status(201).json({ message: 'Usuario creado exitosamente', usuario });
+
+        // Generar el token JWT
+        const token = jwt.sign(
+            { id_usuario: usuario.id_usuario, rol: usuario.rol },
+            process.env.JWT_SECRET,
+            { expiresIn: process.env.JWT_EXPIRATION || '1h' }
+        );
+
+        // Enviar la respuesta con el token y los datos del usuario
+        res.status(201).json({
+            message: 'Usuario creado exitosamente',
+            usuario: {
+                id_usuario: usuario.id_usuario,
+                nombre: usuario.nombre,
+                email: usuario.email,
+                rol: usuario.rol
+            },
+            token // Incluir el token en la respuesta
+        });
     } catch (error) {
         next(error);
     }
 };
+
 
 // Autenticar usuario
 const loginUsuario = async (req, res, next) => {
