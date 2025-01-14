@@ -40,7 +40,7 @@ npm install
 2. Ejecuta el servidor:
 
 ```bash
-npm start
+npm start or node server.js
 ```
 
 3. Accede a la documentación Swagger en:
