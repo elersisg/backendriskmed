@@ -1,17 +1,23 @@
 const Joi = require('joi');
 
-// DTO para crear un nuevo inspector
+// DTO para insertar un nuevo inspector
 const CreateInspectorDTO = Joi.object({
-    id_usuario: Joi.number().integer().positive().required(), // FK a la tabla Usuario (obligatorio)
-    cedula_inspector: Joi.string().length(11).required(), // Número de cédula (obligatorio)
+    id_usuario: Joi.number().integer().required(),
+    cedula_inspector: Joi.string().length(11).required(),
 });
 
 // DTO para filtrar inspectores por nombre
-const FilterInspectoresByNombreDTO = Joi.object({
-    nombre: Joi.string().max(100).optional(), // Filtro por nombre (opcional)
+const FilterInspectorsByNameDTO = Joi.object({
+    nombre: Joi.string().max(100).optional(),
+});
+
+// DTO para seleccionar inspectores sin evaluación en una fecha específica
+const InspectorsWithoutEvaluationDTO = Joi.object({
+    fecha: Joi.date().required(),
 });
 
 module.exports = {
     CreateInspectorDTO,
-    FilterInspectoresByNombreDTO,
+    FilterInspectorsByNameDTO,
+    InspectorsWithoutEvaluationDTO,
 };

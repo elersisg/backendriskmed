@@ -1,28 +1,29 @@
 const inspectorModel = require('../models/inspector.model.js');
 
-// Servicio para insertar un inspector
+// Crear inspector
 const createInspector = async (data) => {
-    return await inspectorModel.insertInspector(data);
+    const { id_usuario, cedula_inspector } = data;
+    return await inspectorModel.insertInspector(id_usuario, cedula_inspector);
 };
 
-// Servicio para obtener inspectores por nombre
-const getInspectoresByNombre = async (nombre) => {
-    return await inspectorModel.selectInspectoresByNombre(nombre);
+// Obtener lista de inspectores con filtro por nombre
+const getInspectorsByName = async (nombre) => {
+    return await inspectorModel.selectInspectorsByName(nombre);
 };
 
-// Servicio para obtener inspectores con evaluaciones recientes
-const getInspectoresWithEvaluations = async () => {
-    return await inspectorModel.selectInspectoresWithEvaluations();
+// Obtener inspectores con evaluaciones recientes
+const getInspectorsWithEvaluations = async () => {
+    return await inspectorModel.selectInspectorsWithEvaluations();
 };
 
-// Servicio para eliminar un inspector
-const deleteInspector = async (id_inspector) => {
-    return await inspectorModel.deleteInspectorById(id_inspector);
+// Obtener inspectores sin evaluación en una fecha específica
+const getInspectorsWithoutEvaluationOnDate = async (fecha) => {
+    return await inspectorModel.selectInspectorsWithoutEvaluationOnDate(fecha);
 };
 
 module.exports = {
     createInspector,
-    getInspectoresByNombre,
-    getInspectoresWithEvaluations,
-    deleteInspector,
+    getInspectorsByName,
+    getInspectorsWithEvaluations,
+    getInspectorsWithoutEvaluationOnDate,
 };

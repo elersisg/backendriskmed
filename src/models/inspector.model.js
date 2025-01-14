@@ -1,47 +1,64 @@
-const { poolPromise } = require('../config/dbConfig.js');
+const { connectToDatabase } = require('../config/dbConfig.js');
 
 // Insertar un nuevo inspector
-const insertInspector = async (data) => {
-    const pool = await poolPromise;
-    const { id_usuario, cedula_inspector } = data;
-    const result = await pool.request()
-        .input('id_usuario', id_usuario)
-        .input('cedula_inspector', cedula_inspector)
-        .execute('InsertInspector');
-    return result.recordset[0];
+const insertInspector = async (id_usuario, cedula_inspector) => {
+    try {
+        const pool = await connectToDatabase();
+        const result = await pool.request()
+            .input('id_usuario', id_usuario)
+            .input('cedula_inspector', cedula_inspector)
+            .execute('InsertInspector');
+        return result.recordset[0];
+    } catch (error) {
+        console.error('Error en insertInspector:', error.message);
+        throw error;
+    }
 };
 
-// Obtener lista de inspectores con filtro opcional por nombre
-const selectInspectoresByNombre = async (nombre) => {
-    const pool = await poolPromise;
-    const result = await pool.request()
-        .input('nombre', nombre || null)
-        .execute('SelectInspectoresByNombre');
-    return result.recordset;
+// Obtener lista de inspectores con filtro por nombre
+const selectInspectorsByName = async (nombre) => {
+    try {
+        const pool = await connectToDatabase();
+        const result = await pool.request()
+            .input('nombre', nombre || null)
+            .execute('SelectInspectoresByNombre');
+        return result.recordset;
+    } catch (error) {
+        console.error('Error en selectInspectorsByName:', error.message);
+        throw error;
+    }
 };
 
 // Obtener inspectores con evaluaciones recientes
-const selectInspectoresWithEvaluations = async () => {
-    const pool = await poolPromise;
-    const result = await pool.request().execute('SelectInspectoresWithEvaluations');
-    return result.recordset;
+const selectInspectorsWithEvaluations = async () => {
+    try {
+        const pool = await connectToDatabase();
+        const result = await pool.request()
+            .execute('SelectInspectoresWithEvaluations');
+        return result.recordset;
+    } catch (error) {
+        console.error('Error en selectInspectorsWithEvaluations:', error.message);
+        throw error;
+    }
 };
 
-// Eliminar un inspector por ID
-const deleteInspectorById = async (id_inspector) => {
-    const pool = await poolPromise;
-    const result = await pool.request()
-        .input('id_inspector', id_inspector)
-        .query(`
-            DELETE FROM Inspector
-            WHERE id_inspector = @id_inspector;
-        `);
-    return result.rowsAffected[0]; // Retorna el número de filas afectadas
+// Obtener inspectores sin evaluaciones en una fecha específica
+const selectInspectorsWithoutEvaluationOnDate = async (fecha) => {
+    try {
+        const pool = await connectToDatabase();
+        const result = await pool.request()
+            .input('fecha', fecha)
+            .execute('SelectInspectoresSinEvaluacionEnFecha');
+        return result.recordset;
+    } catch (error) {
+        console.error('Error en selectInspectorsWithoutEvaluationOnDate:', error.message);
+        throw error;
+    }
 };
 
 module.exports = {
     insertInspector,
-    selectInspectoresByNombre,
-    selectInspectoresWithEvaluations,
-    deleteInspectorById,
+    selectInspectorsByName,
+    selectInspectorsWithEvaluations,
+    selectInspectorsWithoutEvaluationOnDate,
 };

@@ -46,7 +46,7 @@ router.post('/', inspectorController.createInspector);
  *           type: string
  *     responses:
  *       200:
- *         description: Lista de inspectores
+ *         description: Lista de inspectores obtenida exitosamente
  */
 router.get('/', inspectorController.getInspectoresByNombre);
 
@@ -58,9 +58,31 @@ router.get('/', inspectorController.getInspectoresByNombre);
  *     tags: [Inspectores]
  *     responses:
  *       200:
- *         description: Lista de inspectores con evaluaciones recientes
+ *         description: Lista de inspectores con evaluaciones recientes obtenida exitosamente
  */
 router.get('/evaluaciones', inspectorController.getInspectoresWithEvaluations);
+
+/**
+ * @swagger
+ * /inspector/sin-evaluacion:
+ *   post:
+ *     summary: Obtener inspectores sin evaluación en una fecha específica
+ *     tags: [Inspectores]
+ *     requestBody:
+ *       required: true
+ *       content:
+ *         application/json:
+ *           schema:
+ *             type: object
+ *             properties:
+ *               fecha:
+ *                 type: string
+ *                 format: date
+ *     responses:
+ *       200:
+ *         description: Lista de inspectores sin evaluación obtenida exitosamente
+ */
+router.post('/sin-evaluacion', inspectorController.getInspectoresWithoutEvaluationOnDate);
 
 /**
  * @swagger
@@ -81,6 +103,5 @@ router.get('/evaluaciones', inspectorController.getInspectoresWithEvaluations);
  *         description: Inspector no encontrado
  */
 router.delete('/:id_inspector', inspectorController.deleteInspector);
-
 
 module.exports = router;
