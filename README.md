@@ -32,7 +32,7 @@ cd riskmed
 3. Instala las dependencias:
 
 ```bash
-npm install
+npm install or node server.js
 ```
 
 ## Ejecución del Proyecto
