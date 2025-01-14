@@ -26,12 +26,26 @@ const swaggerOptions = {
         description: 'Servidor de desarrollo',
       },
     ],
+    security: [
+      {
+        BearerAuth: [] // Aplica el esquema de seguridad global para la autenticación
+      }
+    ],
+    components: {
+      securitySchemes: {
+        BearerAuth: {
+          type: 'http',
+          scheme: 'bearer',
+          bearerFormat: 'JWT', // Usando JWT como método de autenticación
+        }
+      }
+    }
   },
-  apis: ['./src/routes/*.js'], 
+  apis: ['./src/routes/*.js'], // Rutas de la API
 };
 
-//Importar rutas
-const usuariosRoutes = require('./src/routes/usuario.routes.js')  ; // Rutas relacionadas con usuarios
+// Importar rutas
+const usuariosRoutes = require('./src/routes/usuario.routes.js'); // Rutas relacionadas con usuarios
 const nivelRiesgoRoutes = require('./src/routes/nivelriesgo.routes.js'); // Rutas relacionadas con niveles de riesgo
 const categoriaMedRoutes = require('./src/routes/categoriamed.routes.js'); // Rutas relacionadas con categorías médicas
 const subcategoriaMedRoutes = require('./src/routes/subcategoriamed.routes.js'); // Nueva ruta para subcategorías médicas
@@ -61,7 +75,6 @@ app.use('/api/proveedor', proveedorRoutes);
 app.use('/api/solicitud', solicitudRoutes);
 app.use('/api/evaluacion', evaluacionRoutes);
 app.use('/api/factor', factorRoutes);
-
 
 const swaggerDocs = swaggerJSDoc(swaggerOptions);
 app.use('/api-docs', swaggerUI.serve, swaggerUI.setup(swaggerDocs));

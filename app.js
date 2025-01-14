@@ -6,7 +6,7 @@ const swaggerUI = require('swagger-ui-express');
 const swaggerJSDoc = require('swagger-jsdoc');
 
 // Importar rutas
-const usuariosRoutes = require('./src/routes/usuario.routes.js')  ; // Rutas relacionadas con usuarios
+const usuariosRoutes = require('./src/routes/usuario.routes.js');  // Rutas relacionadas con usuarios
 const nivelRiesgoRoutes = require('./src/routes/nivelriesgo.routes.js'); // Rutas relacionadas con niveles de riesgo
 const categoriaMedRoutes = require('./src/routes/categoriamed.routes.js'); // Rutas relacionadas con categorías médicas
 const subcategoriaMedRoutes = require('./src/routes/subcategoriamed.routes.js'); // Ruta para subcategorías médicas
@@ -20,7 +20,6 @@ const proveedorRoutes = require('./src/routes/proveedor.routes.js');
 const solicitudRoutes = require('./src/routes/solicitud.routes.js');
 const evaluacionRoutes = require('./src/routes/evaluacion.routes.js');
 const factorRoutes = require('./src/routes/factor.routes.js');
-
 
 const app = express();
 
@@ -54,7 +53,6 @@ app.use(express.json()); // Parsear JSON en las solicitudes
 app.use(express.urlencoded({ extended: true })); // Parsear datos de formulario
 app.use(morgan('dev')); // Registrar solicitudes HTTP en consola
 
-
 // Documentación de Swagger
 app.use('/api-docs', swaggerUI.serve, swaggerUI.setup(swaggerDocs));
 
@@ -86,6 +84,3 @@ app.use((err, req, res, next) => {
 });
 
 module.exports = app;
-
-
-//comentario de prueba

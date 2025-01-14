@@ -1,7 +1,7 @@
 const Joi = require('joi');
 
 // DTO para crear un nuevo usuario
-const CreateUsuarioDTO = Joi.object({
+const InsertUsuarioDTO = Joi.object({
     rol: Joi.string().max(20).required(), // Rol del usuario (obligatorio)
     nombre: Joi.string().max(100).required(), // Nombre completo del usuario (obligatorio)
     email: Joi.string().email().max(150).required(), // Correo electrónico válido (obligatorio)
@@ -23,7 +23,7 @@ const UpdateUsuarioDTO = Joi.object({
 });
 
 module.exports = {
-    CreateUsuarioDTO,
+    InsertUsuarioDTO,
     LoginUsuarioDTO,
     UpdateUsuarioDTO,
 };

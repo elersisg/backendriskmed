@@ -1,11 +1,11 @@
 const usuarioService = require('../services/usuario.service.js');
-const { CreateUsuarioDTO, LoginUsuarioDTO, UpdateUsuarioDTO } = require('../DTO/usuario.dto.js');
+const { InsertUsuarioDTO, LoginUsuarioDTO, UpdateUsuarioDTO } = require('../DTO/usuario.dto.js');
 
 // Crear un nuevo usuario
-const createUsuario = async (req, res, next) => {
+const insertUsuario = async (req, res, next) => {
     try {
-        const validatedData = await CreateUsuarioDTO.validateAsync(req.body);
-        const usuario = await usuarioService.createUsuario(validatedData);
+        const validatedData = await InsertUsuarioDTO.validateAsync(req.body);
+        const usuario = await usuarioService.insertUsuario(validatedData);
         res.status(201).json({ message: 'Usuario creado exitosamente', usuario });
     } catch (error) {
         next(error);
@@ -47,7 +47,7 @@ const deleteUsuario = async (req, res, next) => {
 };
 
 module.exports = {
-    createUsuario,
+    insertUsuario,
     loginUsuario,
     updateUsuario,
     deleteUsuario,

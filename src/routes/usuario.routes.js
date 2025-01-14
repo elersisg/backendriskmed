@@ -12,7 +12,7 @@ const { authenticateToken } = require('../middleware/auth.middleware.js');
 
 /**
  * @swagger
- * /usuarios/crear:
+ * /usuarios:
  *   post:
  *     summary: Crear un nuevo usuario
  *     tags: [Usuarios]
@@ -36,8 +36,10 @@ const { authenticateToken } = require('../middleware/auth.middleware.js');
  *     responses:
  *       201:
  *         description: Usuario creado exitosamente
+  *     security:
+ *       - BearerAuth: []  # Aquí indicamos que esta ruta requiere autenticación JWT
  */
-router.post('/', usuarioController.createUsuario);
+router.post('/insert', authenticateToken, usuarioController.insertUsuario);
 
 /**
  * @swagger
@@ -59,8 +61,10 @@ router.post('/', usuarioController.createUsuario);
  *     responses:
  *       200:
  *         description: Autenticación exitosa
+ *     security:
+ *       - BearerAuth: []  # Aquí indicamos que esta ruta requiere autenticación JWT
  */
-router.post('/login', usuarioController.loginUsuario);
+router.post('/login',authenticateToken, usuarioController.loginUsuario);
 
 /**
  * @swagger
@@ -91,7 +95,7 @@ router.post('/login', usuarioController.loginUsuario);
  *       200:
  *         description: Usuario actualizado exitosamente
  */
-router.put('/:id_usuario', authenticateToken, usuarioController.updateUsuario); // Protegida con autenticación
+router.put('/:id_usuario', usuarioController.updateUsuario); 
 
 /**
  * @swagger
@@ -111,6 +115,6 @@ router.put('/:id_usuario', authenticateToken, usuarioController.updateUsuario); 
  *       404:
  *         description: Usuario no encontrado
  */
-router.delete('/:id_usuario', authenticateToken, usuarioController.deleteUsuario); // Protegida con autenticación
+router.delete('/:id_usuario', usuarioController.deleteUsuario); 
 
 module.exports = router;
