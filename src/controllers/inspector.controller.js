@@ -35,7 +35,7 @@ const getInspectoresWithEvaluations = async (req, res, next) => {
 
 const getInspectoresWithoutEvaluationOnDate = async (req, res, next) => {
     try {
-        const validatedData = await InspectorsWithoutEvaluationDTO.validateAsync(req.body); // Validar fecha
+        const validatedData = await InspectorsWithoutEvaluationDTO.validateAsync(req.query); // Validar fecha
         const inspectores = await inspectorService.getInspectorsWithoutEvaluationOnDate(validatedData.fecha);
         res.status(200).json(inspectores);
     } catch (error) {

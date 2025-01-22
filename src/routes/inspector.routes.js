@@ -65,24 +65,22 @@ router.get('/evaluaciones', inspectorController.getInspectoresWithEvaluations);
 /**
  * @swagger
  * /inspector/sin-evaluacion:
- *   post:
+ *   get:
  *     summary: Obtener inspectores sin evaluación en una fecha específica
  *     tags: [Inspectores]
- *     requestBody:
- *       required: true
- *       content:
- *         application/json:
- *           schema:
- *             type: object
- *             properties:
- *               fecha:
- *                 type: string
- *                 format: date
+  *     parameters:
+ *       - in: query
+ *         name: fecha
+ *         required: true
+ *         schema:
+ *           type: string
+ *           format: date
+ *         description: Fecha para obtener los inspectores sin evaluación
  *     responses:
  *       200:
  *         description: Lista de inspectores sin evaluación obtenida exitosamente
  */
-router.post('/sin-evaluacion', inspectorController.getInspectoresWithoutEvaluationOnDate);
+router.get('/sin-evaluacion', inspectorController.getInspectoresWithoutEvaluationOnDate);
 
 /**
  * @swagger
