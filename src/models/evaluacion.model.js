@@ -86,9 +86,37 @@ const deleteEvaluacionById = async (id_evaluacion) => {
     }
 };
 
+
+// Actualizar los cálculos de riesgo en la evaluación
+const updateEvaluacionRisk = async (id_evaluacion, riesgoEstablecimiento, riesgoTotal) => {
+    try {
+        const pool = await connectToDatabase();
+        const result = await pool.request()
+            .input('id_evaluacion', id_evaluacion)
+            .input('riesgo_establecimiento', riesgoEstablecimiento)
+            .input('resultado', riesgoTotal)
+            .query(`
+                UPDATE Evaluacion
+                SET riesgo_establecimiento = @riesgo_establecimiento,
+                    resultado = @resultado
+                WHERE id_evaluacion = @id_evaluacion;
+            `);
+
+        return result.rowsAffected[0]; // Retorna el número de filas afectadas
+    } catch (error) {
+        console.error('Error en updateEvaluacionRisk:', error.message);
+        throw error;
+    }
+};
+
+module.exports = {
+    updateEvaluacionRisk,
+};
+
 module.exports = {
     insertEvaluacion,
     selectEvaluacionWithFilters,
     updateEvaluacion,
     deleteEvaluacionById,
+    updateEvaluacionRisk,
 };

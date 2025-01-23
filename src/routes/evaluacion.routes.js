@@ -169,4 +169,33 @@ router.put('/:id_evaluacion', evaluacionController.updateEvaluacion);
  */
 router.delete('/:id_evaluacion', evaluacionController.deleteEvaluacion);
 
+/**
+ * @swagger
+ * /evaluacion/calculate-risk:
+ *   post:
+ *     summary: Calcular y guardar el riesgo del establecimiento
+ *     tags: [Evaluaciones]
+ *     requestBody:
+ *       required: true
+ *       content:
+ *         application/json:
+ *           schema:
+ *             type: object
+ *             properties:
+ *               nivelRiesgoAlimento:
+ *                 type: number
+ *               scores:
+ *                 type: array
+ *                 items:
+ *                   type: number
+ *               id_evaluacion:
+ *                 type: integer
+ *     responses:
+ *       200:
+ *         description: Cálculo realizado y guardado exitosamente
+ *       400:
+ *         description: Error de validación en los datos de entrada
+ */
+router.post('/calculate-risk', evaluacionController.calculateRisk);
+
 module.exports = router;

@@ -50,9 +50,58 @@ const deleteEvaluacion = async (req, res, next) => {
     }
 };
 
+// Endpoint para calcular y guardar el riesgo del establecimiento
+const calculateRisk = async (req, res, next) => {
+    try {
+        const { nivelRiesgoAlimento, scores, id_evaluacion } = req.body;
+
+        // Validaciones iniciales
+        if (
+            typeof nivelRiesgoAlimento !== 'number' ||
+            nivelRiesgoAlimento < 1 ||
+            nivelRiesgoAlimento > 3
+        ) {
+            return res.status(400).json({
+                error: 'El nivel de riesgo del alimento debe ser un número entre 1 (Bajo) y 3 (Alto).',
+            });
+        }
+
+        if (!scores || scores.length !== 6) {
+            return res.status(400).json({
+                error: 'El array de puntuaciones debe contener exactamente 6 valores.',
+            });
+        }
+
+        if (scores.some((score) => typeof score !== 'number' || score < 0)) {
+            return res.status(400).json({
+                error: 'Las puntuaciones deben ser números válidos mayores o iguales a 0.',
+            });
+        }
+
+        if (!id_evaluacion) {
+            return res.status(400).json({
+                error: 'Se requiere un ID de evaluación válido.',
+            });
+        }
+
+        // Llamar al servicio para calcular y guardar el riesgo
+        const result = await evaluacionService.calculateAndSaveRisk(nivelRiesgoAlimento, scores, id_evaluacion);
+
+        res.status(200).json({
+            message: 'Cálculo realizado y guardado exitosamente',
+            data: result,
+        });
+    } catch (error) {
+        console.error('Error en calculateRisk:', error.message);
+        next(error);
+    }
+};
+
+
 module.exports = {
     createEvaluacion,
     getEvaluacionesWithFilters,
     updateEvaluacion,
     deleteEvaluacion,
+    calculateRisk,
 };
